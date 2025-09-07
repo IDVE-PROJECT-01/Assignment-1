@@ -177,7 +177,7 @@ The most popular car makes are Toyota, Ford, and BMW. The most popular models ar
 For meaningful analysis, outliers were removed for the top five currencies (\$, £, CA\$, €, R).
 
 \begin{enumerate}
-    \item The top currencies were identified by computing the frequency count of each currency symbol and sorting these counts in descending order. The five most frequent currencies, corresponding to the United States (US\$), United Kingdom (£), Canada (CA\$), the Eurozone (€), and South Africa (R), were selected for subsequent analysis.
+    \item The top currencies were identified by computing the frequency count of each currency symbol and sorting these counts in descending order. The five most frequent currencies, corresponding to the United States (US\$), United Kingdom (£), Canada (CA\$), the Euro (€), and South Africa (R), were selected for subsequent analysis.
 
     \item To ensure a meaningful and comparable analysis across these economic regions, we implemented a currency-specific outlier removal protocol. For each of the top five currencies, we calculated the 1st and 99th percentiles for the variables \texttt{total\_spent}, \texttt{gallons}, \texttt{cost\_per\_gallon}, \texttt{miles}, and \texttt{mpg}. These percentiles were used to define upper and lower bounds for plausible values, which were tailored to each currency to account for differences in fuel prices and consumption habits. All rows containing values outside these designated thresholds for their respective currency were removed. This process refined the dataset by eliminating extreme and implausible entries, which reduced the total count of observations, adjusted summary statistics like the mean, and narrowed the value ranges to more representative distributions.
 
