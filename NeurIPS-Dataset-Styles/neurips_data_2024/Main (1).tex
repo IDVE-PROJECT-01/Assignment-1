@@ -15,6 +15,8 @@
 \usepackage{subcaption}     % for subfigures
 \usepackage{amsmath}        % for math equations
 \usepackage{cleveref}       % for smart cross-referencing
+\usepackage{float}         % in your preamble
+
 
 \title{COMS4060A/7056A --- Assignment 1: Analysis of Vehicle Fueling Data}
 
@@ -105,19 +107,28 @@ The numeric fields \texttt{gallons}, \texttt{miles}, and \texttt{mpg} were clean
 \end{enumerate}
 
 
-\section{Feature Engineering}
-To enhance the dataset's utility, several new features were engineered:
+\section*{Question 2: Feature Engineering}
+
+\subsection*{Currency Extraction}
+The \texttt{total\_spent} and \texttt{cost\_per\_gallon} columns originally included both numeric values and currency symbols (e.g., R500, \$70). We extracted the currency symbols into a new column, \texttt{currency}, and cleaned the numeric parts into proper floats. This allowed for easier comparison of costs across different countries while still retaining the currency as a categorical variable.
+
+\subsection*{Float Values for Costs}
+After separating the currency symbols, both \texttt{total\_spent} and \texttt{cost\_per\_gallon} were converted into numeric columns. This was essential for calculations such as average prices, comparisons across time, and further statistical analysis.
+
+\subsection*{User and Vehicle Information}
+The user ID, car make, model, and year were extracted from the \texttt{user\_url} field. The last part of the URL was used as the user ID, while other segments provided the car details. This enriched the dataset by linking fuel transactions to individual users and specific vehicles.
+
+\subsection*{Metric System Conversion}
+Since the dataset was in imperial units, I converted the values into metric units, which are more standard in South Africa:
 \begin{itemize}
-    \item \textbf{Currency Extraction:} Currency symbols (e.g., R, \$) were extracted from \texttt{total\_spent} and \texttt{cost\_per\_gallon} into a new \texttt{currency} column. The numeric parts were cleaned into floats.
-    \item \textbf{User and Vehicle Information:} The \texttt{user\_url} field was parsed to extract a unique user ID, car make, model, and year.
-    \item \textbf{Metric System Conversion:} Imperial units were converted to metric standards more common in South Africa:
-    \begin{align*}
-        \text{Litres Filled} &= \text{gallons} \times 3.785 \\
-        \text{Kilometres Driven} &= \text{miles} \times 1.609 \\
-        \text{Litres per 100km} &= (\text{litres} / \text{km\_driven}) \times 100
-    \end{align*}
+    \item Litres Filled: Computed from gallons (1 US gallon $\approx$ 3.785 litres).
+    \item Kilometres Driven: Converted from miles (1 mile $\approx$ 1.609 km).
+    \item Litres per 100km: Derived as $(\texttt{litres} / \texttt{km\_driven}) * 100$. This metric is a widely used standard to measure fuel efficiency.
 \end{itemize}
-These new features standardize the data and enable more intuitive and region-specific analysis.
+
+\subsection*{Discussion}
+These new features added greater interpretability and standardisation to the dataset. For example, litres per 100km allows us to compare vehicle efficiency in a way that is familiar and directly meaningful to local contexts, while extracting user and vehicle details enabled us to later perform country- and vehicle-specific analyses.
+
 
 \section{Vehicle Exploration}
 
@@ -187,6 +198,50 @@ For meaningful analysis, outliers were removed for the top five currencies (\$, 
         \item Ensure comparability across different currencies by controlling for regional economic factors.
     \end{itemize}
 \end{enumerate}
+
+\section*{Section 4.3: Fuel Usage In South Africa}
+
+\subsection*{Filtering South African Data}
+The dataset was filtered to include only records where the currency was Rand (R). This gave us a clean subset (\texttt{sa\_df}) representing South African users, but some SA users incorrectly logged in USD, meaning our dataset may undercount South African drivers.
+
+\subsection*{Fuel Prices Over Time}
+The \texttt{cost\_per\_gallon} column was cleaned to numeric form, and fuel prices were plotted over time. This provided a general view of how fuel prices in SA fluctuated across the dataset, showing periods of increases and decreases, but over time, they gradually increased.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/Average Fuel Prices.png}
+    \caption{Fuel Prices Over Time in South Africa}
+\end{figure}
+
+
+\subsection*{Refueling by Day of Week}
+A bar chart of fueling activity by weekday was produced. This revealed overall patterns of consumer behavior during the week, with particular interest in the fact that Tuesdays had higher refueling rates compared to other days.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/Number of refuels.png}
+    \caption{Refueling Activity by Day of Week}
+\end{figure}
+
+\subsection*{First Tuesdays vs First Wednesday Analysis}
+The dataset was further restricted to only the first Tuesday and Wednesday of each month. This was crucial for examining the direct impact of price adjustments, since fuel prices are reset on the first Tuesday of the month in South Africa.
+
+\subsection*{Price Change Indicator}
+A \texttt{price\_change} column was created to indicate whether the price went up or down after the adjustment. This allowed grouping and comparison of consumer behavior based on the direction of the price change. And it was noticed that the \texttt{price\_trend} for the first Tuesday (row1), Wednesday (row2), Wednesday (row3), and Tuesday (row4) went up.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/Screenshot 2025-09-07 222047.png}
+    \caption{Consumer Refueling Behavior Based on Price Change}
+\end{figure}
+
+\subsection*{Findings}
+When prices decreased, more users tended to refuel on Wednesday, postponing their purchase to take advantage of the lower cost.
+
+When prices increased, more users tended to refuel on Tuesday, anticipating the rise and filling up before the higher price took effect.
+
+\subsection*{Discussion}
+These findings align with economic intuition: consumers strategically time their refueling around predictable price changes to minimize costs. The plots clearly illustrated this behavior, showing noticeable shifts between Tuesday and Wednesday refueling counts depending on whether prices were going up or down.
 
 \section{Conclusion}
 This project successfully transformed a raw, inconsistent dataset into a clean, enriched resource for analysis. Through methodical data cleaning and insightful feature engineering, we were able to standardize the data and uncover significant trends. Key findings include the correlation between economic development and app usage, the relative youth of vehicle fleets in top user countries, and the market dominance of specific automotive brands. The methodologies developed here provide a robust framework for handling similar real-world datasets in the future.
